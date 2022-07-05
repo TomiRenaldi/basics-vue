@@ -17,19 +17,22 @@
         [v-cloak] {
             display: none;
         }
+        input {
+            margin: 10px;
+            display: block;
+        }
     </style>
 </head>
 <body>
     <div id="app" v-cloak >
-        {{ greeting }}
-        <input v-model="greeting" />
+       <login-form />
 
         <hr />
 
-        <button @click="toggleBox">Toggle Box</button>
+        <button @click.prevent.stop="toggleBox">Toggle Box</button>
         <div v-if="isVisible" class="box"></div>
 
-    <script src="https://unpkg.com/vue@3"></script>
+    <script src="https://unpkg.com/vue@next"></script>
     <script>
         let app = Vue.createApp({
             data: function() {
@@ -41,9 +44,54 @@
             methods: {
                 toggleBox() {
                     this.isVisible = !this.isVisible
+                },
+                greet(greeting){
+                    console.log(greeting)
                 }
             }
         })
+
+        app.component('login-form', {
+            template: `
+                <form @submit.prevent="handleSubmit">
+                    <h1>{{ title }}</h1>
+                    <custom-input type="email" :label="passwordLabel" />
+                    <custom-input type="password" :label="emailLabel" />
+                    <button>Login</button>
+                </form>
+            `,
+            component: ['custom-input'],
+            data() {
+                return {
+                    title: 'Login Form',
+                    email: '',
+                    password: '',
+                    emailLabel: 'Email',
+                    passwordLabel: 'Password'
+                }
+            },
+            methods: {
+                handleSubmit() {
+                    console.log(this.email, this.password)
+                }
+            }
+        })
+
+        app.component('custom-input', {
+            template: `
+                <label>
+                    {{ label }}
+                    <input type="text" v-model="inputValue">
+                </label>
+            `,
+            props: ['label'],
+            data() {
+                return {
+                    inputValue: ''
+                }
+            }
+        })
+
         app.mount('#app')
     </script>
 </body>
